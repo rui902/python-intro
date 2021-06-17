@@ -2,7 +2,6 @@
 # coding: utf-8
 """Contains class definitions for Aircraft, Airport, Flight, Trip"""
 
-
 class Aircraft:
     """ An aircraft is defined as the passenger aircraft which varies in seating number and arrangement
 
@@ -22,7 +21,7 @@ class Aircraft:
         self._num_rows = num_rows
 
     def model(self):
-        return self.model
+        return self._model
 
     def all_seats(self):
         # Letters I and O skipped to avoid confusion with numbers 1 and 0
@@ -154,3 +153,41 @@ class Passenger:
     def __repr__(self):
         return f"Passenger: {self._name} ({self._passport})"
 
+
+if __name__ == "__main__":
+    from pprint import pprint as pp
+
+    # help(Aircraft)
+
+    ac = Aircraft("Airbus A396", num_rows=5, num_seats=5)
+    # print(ac.all_seats())
+    # pp(ac.list_seats())
+
+    help(Flight)
+
+    f = Flight("TP1234", aircraft=ac)
+    print("Flight number: %s" % f.number())
+
+    print("Available Seats:", f.num_available_seats())
+    print("Default Seats:")
+    pp(f.seats())
+
+    # help(Passenger)
+
+    p1 = Passenger("Rui Costa", "C123456")
+    p2 = Passenger("Maria Rosário", "C234567")
+    p3 = Passenger("Joaquim Alves", "C345678")
+
+    f.assign_seat("1A", p1)
+    f.assign_seat("1B", p2)
+    f.assign_seat("5E", p3)
+    print("Seats after assigning new passenger:")
+    pp(f.seats())
+    print("Available Seats:", f.num_available_seats())
+
+    # f.assign_seat("19C", p1)
+    # f.assign_seat("1Z", p1)
+    # f.assign_seat("AA", p1)
+
+    # TPC:
+    # Create a method that lists a list of tuples containg all available seats next to each other (e.g. [(1A, 1B), (1B, 1C)]

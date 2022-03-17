@@ -2,6 +2,10 @@
 # coding: utf-8
 """Contains class definitions for Aircraft, Airport, Flight, Trip"""
 
+
+import traceback
+
+
 class Aircraft:
     """ An aircraft is defined as the passenger aircraft which varies in seating number and arrangement
 
@@ -72,7 +76,8 @@ class Flight:
         return self._number
 
     def aircraft_model(self):
-        # nunca se retorna um objeto para o user aceder, nós que temos conhecimento devemos retornar o necessário
+        # we shouldn't return a private object fully,
+        # always return specific values from the private objects and decide what information users may access
         return self._aircraft.model()
 
     def seats(self):
@@ -92,7 +97,9 @@ class Flight:
         if not seat:
             raise ValueError("Seat cannot be empty")
 
-        rows, letters = self._aircraft.all_seats()  # não é static por causa desta linha, mas podia ser
+        # _parse_seat can't be a static method because of this line,
+        # otherwise it could very well be converted into a static method
+        rows, letters = self._aircraft.all_seats()
 
         letter = seat[-1]
         if letter not in letters:
@@ -151,19 +158,21 @@ class Passenger:
         return self._passport
 
     def __repr__(self):
+        # For more Operator Overloading examples besides __repr__:
+        # https://realpython.com/operator-function-overloading/
         return f"Passenger: {self._name} ({self._passport})"
 
 
 if __name__ == "__main__":
     from pprint import pprint as pp
 
-    # help(Aircraft)
+    help(Aircraft)
+    help(Flight)
+    help(Passenger)
 
     ac = Aircraft("Airbus A396", num_rows=5, num_seats=5)
-    # print(ac.all_seats())
-    # pp(ac.list_seats())
-
-    help(Flight)
+    print(ac.all_seats())
+    pp(ac.list_seats())
 
     f = Flight("TP1234", aircraft=ac)
     print("Flight number: %s" % f.number())
@@ -172,11 +181,9 @@ if __name__ == "__main__":
     print("Default Seats:")
     pp(f.seats())
 
-    # help(Passenger)
-
     p1 = Passenger("Rui Costa", "C123456")
-    p2 = Passenger("Maria Rosário", "C234567")
-    p3 = Passenger("Joaquim Alves", "C345678")
+    p2 = Passenger("Jaquelina Gonçalves", "C234567")
+    p3 = Passenger("Alperce Figueiredo", "C345678")
 
     f.assign_seat("1A", p1)
     f.assign_seat("1B", p2)
@@ -185,9 +192,36 @@ if __name__ == "__main__":
     pp(f.seats())
     print("Available Seats:", f.num_available_seats())
 
-    # f.assign_seat("19C", p1)
-    # f.assign_seat("1Z", p1)
-    # f.assign_seat("AA", p1)
+    try:
+        f.assign_seat("19C", p1)
+        # Seat 19C doesn't exist and should raise an exception
 
-    # TPC:
-    # Create a method that lists a list of tuples containg all available seats next to each other (e.g. [(1A, 1B), (1B, 1C)]
+    except ValueError as ve1:
+        traceback.print_exc()
+
+    try:
+        f.assign_seat("1Z", p1)
+        # Z isn't a valid seat letter and should raise an exception
+
+    except ValueError as ve2:
+        traceback.print_exc()
+
+    try:
+        f.assign_seat("AA", p1)
+        # A isn't a valid seat number and should raise an exception
+
+    except ValueError as ve3:
+        traceback.print_exc()
+
+    try:
+        f.assign_seat("5E", p1)
+        # Seat 5E is already assigned and should raise an exception
+
+    except ValueError as ve3:
+        traceback.print_exc()
+
+    #
+    # Homework before next class:
+    # Create a method that lists a list of tuples
+    # containing all available seats next to each other (e.g. [(1A, 1B), (1B, 1C)]
+    #
